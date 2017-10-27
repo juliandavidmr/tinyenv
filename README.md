@@ -14,7 +14,9 @@ go run main.go -list keys
 | Flag |   Subflags   | Description |Example|
 |------|--------------|-------------|-------|
 | list | keys, values | list environment variables | `-list keys` |
-| version | | show version | `-version` |
+| version | | show version        | `-version` |
+| cpus    | | number cpus         | `-cpus`    |
+| inter   | | network interfaces  | `-inter`   |
 
 ### Example
 

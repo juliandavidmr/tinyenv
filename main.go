@@ -3,7 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net"
 	"os"
+	"runtime"
 	"strings"
 )
 
@@ -20,10 +22,31 @@ func _getListEnviron(pos int) {
 		fmt.Println(pair[pos])
 	}
 }
+func _getNumCPUs() {
+	fmt.Print(runtime.NumCPU())
+}
+
+func _getIPs() {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		os.Stderr.WriteString("Oops: " + err.Error() + "\n")
+		os.Exit(1)
+	}
+
+	for _, a := range addrs {
+		if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				os.Stdout.WriteString(ipnet.IP.String() + "\n")
+			}
+		}
+	}
+}
 
 func run() {
 	version := flag.Bool("version", false, "show version")
-	listEnviron := flag.String("list", "*", "list envoirements")
+	listEnviron := flag.String("list", "", "list envoirements")
+	cpus := flag.Bool("cpus", false, "number of cpus")
+	inter := flag.Bool("inter", false, "network interfaces")
 	flags := flag.Bool("flags", false, "list envoirements")
 
 	flag.Parse()
@@ -37,6 +60,10 @@ func run() {
 		case "values":
 			_getListEnviron(1)
 		}
+	} else if *cpus {
+		_getNumCPUs()
+	} else if *inter {
+		_getIPs()
 	} else if *flags {
 		fmt.Println("version:", *version)
 		fmt.Println("numb:", *listEnviron)
